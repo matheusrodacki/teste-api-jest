@@ -1,6 +1,5 @@
 import { describe, expect, it, jest } from "@jest/globals";
 import AuthService from "../../services/authService.js";
-import Usuario from "../../models/usuario.js";
 import bcryptjs from "bcryptjs";
 
 const authService = new AuthService();
