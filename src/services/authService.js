@@ -44,11 +44,17 @@ class AuthService {
   }
 
   async cadastrarUsuario(data) {
+    //verifica se a asenha foi digitada
     if (!data.senha) {
       throw new Error("A senha do usuario é obritatória!");
     }
     data.senha = await bcryptjs.hash(data.senha, 8);
 
+    //verifica se o email já existe no db
+    const emailCadastrado = await Usuario.pegarPeloEmail(data.email);
+    if (emailCadastrado) {
+      throw new Error("O email já esta cadastrado!");
+    }
     const usuario = new Usuario(data);
     try {
       const resposta = await usuario.salvar(usuario);

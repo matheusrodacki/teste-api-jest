@@ -16,14 +16,26 @@ describe("Test authService.cadastrarUsuario", () => {
       "A senha do usuario é obritatória!"
     );
   });
+
+  it("Não pode ser cadastrado um usuário com e-mail duplicado", async () => {
+    const usuarioDuplicado = {
+      nome: "Raphael",
+      email: "raphael@teste.com.br",
+      senha: "123456",
+    };
+
+    const resultado = authService.cadastrarUsuario(usuarioDuplicado);
+
+    await expect(resultado).rejects.toThrowError("O email já esta cadastrado!");
+  });
+
   it("A senha do usuario deve ser criptografada. ", async () => {
     const usuarioTeste = {
       nome: "Rafael",
       email: "rapha@g.com",
       senha: "12345",
     };
-
-    authService.cadastrarUsuario = jest.fn().mockReturnValue({
+    authService.cadastrarUsuario = jest.fn().mockReturnValueOnce({
       message: "usuario criado",
       content: {
         id: 15,
