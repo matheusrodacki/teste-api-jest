@@ -1,7 +1,7 @@
-import nodeMailer from '../config/nodeMailer.js';
-import AluguelLivro from '../models/aluguel_livro.js';
-import Livro from '../models/livro.js';
-import Usuario from '../models/usuario.js';
+import nodeMailer from "../config/nodeMailer.js";
+import AluguelLivro from "../models/aluguel_livro.js";
+import Livro from "../models/livro.js";
+import Usuario from "../models/usuario.js";
 
 class AluguelLivroService {
   async listarAluguelLivro() {
@@ -27,7 +27,7 @@ class AluguelLivroService {
       const livroAlugado = await AluguelLivro.pegarPeloId(body.livroId);
 
       if (livroAlugado && livroAlugado.alugado === true) {
-        throw new Error('Livro já esta alugado');
+        throw new Error("Livro já esta alugado");
       }
 
       const data = {
@@ -43,10 +43,17 @@ class AluguelLivroService {
       if (resposta.id) {
         const usuario = await Usuario.pegarPeloId(usuarioId);
         const livro = await Livro.pegarPeloId(aluguelLivro.livro_id);
-        await nodeMailer(usuario.email, 'Aluguel de Livro', `Olá, ${usuario.nome}, você alugou o livro ${livro.titulo} por ${body.diasAlugados}.`);
+        await nodeMailer(
+          usuario.email,
+          "Aluguel de Livro",
+          `Olá, ${usuario.nome}, você alugou o livro ${livro.titulo} por ${body.diasAlugados}.`
+        );
       }
 
-      return { message: 'Registro de Aluguel de Livro criado', content: resposta };
+      return {
+        message: "Registro de Aluguel de Livro criado",
+        content: resposta,
+      };
     } catch (err) {
       throw new Error(err.message);
     }
@@ -57,7 +64,9 @@ class AluguelLivroService {
       const aluguelLivroAtual = await AluguelLivro.pegarPeloId(livroId);
 
       if (aluguelLivroAtual && aluguelLivroAtual.alugado === false) {
-        throw new Error('Livro não pode ser devolvido, pois esta disponivel para alugar');
+        throw new Error(
+          "Livro não pode ser devolvido, pois esta disponivel para alugar"
+        );
       }
 
       const data = {
@@ -73,10 +82,17 @@ class AluguelLivroService {
       if (resposta.id) {
         const usuario = await Usuario.pegarPeloId(usuarioId);
         const livro = await Livro.pegarPeloId(aluguelLivro.livro_id);
-        await nodeMailer(usuario.email, 'Devolução de Livro', `Olá, ${usuario.nome}, você devolveu o livro ${livro.titulo}.`);
+        await nodeMailer(
+          usuario.email,
+          "Devolução de Livro",
+          `Olá, ${usuario.nome}, você devolveu o livro ${livro.titulo}.`
+        );
       }
 
-      return { message: 'O Livro foi devolvido com sucesso.', content: resposta };
+      return {
+        message: "O Livro foi devolvido com sucesso.",
+        content: resposta,
+      };
     } catch (err) {
       throw new Error(err.message);
     }
@@ -85,10 +101,16 @@ class AluguelLivroService {
   async excluirAluguelLivroLivro(id) {
     try {
       await AluguelLivro.excluir(id);
-      return { message: 'Registro de Aluguel de Livro excluído' };
+      return { message: "Registro de Aluguel de Livro excluído" };
     } catch (err) {
       throw new Error(err.message);
     }
+  }
+  async calcularDataDevolucao(dataAlugado, numeroDiasAlugas) {
+    const dataDevolucao = new Date(dataAlugado.setDate(dataAlugado.getDate()));
+    dataDevolucao.setDate(dataDevolucao.getDate() + numeroDiasAlugas);
+
+    return dataDevolucao;
   }
 }
 
