@@ -6,8 +6,8 @@ describe("Testando configDB", () => {
     const autorMock = {
       nome: "Rafael",
       nacionalidade: "Brasileiro",
-      created_at: new Data().toISOString(),
-      updated_at: new Data().toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
 
     const autorSalvo = await db("autores")
@@ -16,5 +16,7 @@ describe("Testando configDB", () => {
       .then((autorSelecionado) => autorSelecionado[0]);
 
     expect(autorSalvo.nome).toBe(autorMock.nome);
+
+    await db("autores").where({ id: autorSalvo.id }).del();
   });
 });
